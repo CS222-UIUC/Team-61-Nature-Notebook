@@ -1,4 +1,5 @@
-from flask import Flask, request, jsonify
+from authlib.integrations.flask_client import OAuth
+from flask import Flask, request, jsonify, redirect, session, url_for
 from flask_cors import CORS
 import tensorflow as tf
 import numpy as np
@@ -14,6 +15,36 @@ def get_labels(datapth):
 
 app = Flask(__name__)
 CORS(app)
+
+app.secret_key = os.getenv("SECRET_KEY", "lentil1025")
+
+oauth = OAuth(app)
+google_oauth = oauth.register(
+    name='google'
+    client_id='YOUR_CLIENT_ID',
+    client_secret='YOUR_CLIENT_SECRET',
+    authorize_url='https://accounts.google.com/o/oauth2/auth',
+    access_token_url='https://oauth2.googleapis.com/token',
+    client_kwargs={'scope': 'openid email profile'},
+)
+
+@app.route('/login')
+def login():
+    return google_oauth.authorize_redirect(url_for('authorize', _external = True))
+@app.route('/logout')
+
+@app.route('/authorize')
+
+@app.route()
+
+def login_required(func):
+    @wraps(func)
+    def decorate(*args, **kwargs):
+        if 'user' not in session:
+            return jsonify({"error" : "Unauthorized"}), 401
+        return func(*args, **kwargs)
+    return decorate
+
 mpath = 'C:\\Users\\kshar\\nature_notebook\\nature_classifier_updated.keras'
 model = tf.keras.models.load_model(mpath)
 datapath = "C:\\Users\\kshar\\OneDrive\\Desktop\\Birds"
@@ -46,6 +77,7 @@ def use_predict_db(pred_class):
     return jsonify(output)
 
 @app.route("/predict", methods=["POST"])
+@login_required
 def predict():
     if "file" not in request.files:
         return jsonify({"error": "No file provided"}), 400
