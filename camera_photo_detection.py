@@ -15,9 +15,8 @@ def get_labels(datapth):
 
 app = Flask(__name__)
 CORS(app)
-
 app.secret_key = os.getenv("SECRET_KEY", "lentil1025")
-
+"""
 oauth = OAuth(app)
 google_oauth = oauth.register(
     name='google'
@@ -44,7 +43,7 @@ def login_required(func):
             return jsonify({"error" : "Unauthorized"}), 401
         return func(*args, **kwargs)
     return decorate
-
+"""
 mpath = 'C:\\Users\\kshar\\nature_notebook\\nature_classifier_updated.keras'
 model = tf.keras.models.load_model(mpath)
 datapath = "C:\\Users\\kshar\\OneDrive\\Desktop\\Birds"
@@ -77,7 +76,7 @@ def use_predict_db(pred_class):
     return jsonify(output)
 
 @app.route("/predict", methods=["POST"])
-@login_required
+#@login_required
 def predict():
     if "file" not in request.files:
         return jsonify({"error": "No file provided"}), 400
