@@ -1,4 +1,5 @@
 from authlib.integrations.flask_client import OAuth
+import firebase_admin
 from db_funcs import add_species_found, get_bird_info
 from flask import Flask, request, jsonify, redirect, session, url_for
 from flask_cors import CORS
@@ -7,7 +8,7 @@ import numpy as np
 from PIL import Image
 import io
 import os
-from firebase_admin import credentials, db
+from firebase_admin import credentials
 
 def get_labels(datapth):
     class_labels = sorted(os.listdir(datapath))
@@ -45,6 +46,8 @@ def login_required(func):
         return func(*args, **kwargs)
     return decorate
 """
+mpath = 'C:\\Users\\kshar\\nature_notebook\\nature_classifier.keras'
+model = tf.keras.models.load_model(mpath)
 datapath = "C:\\Users\\kshar\\OneDrive\\Desktop\\Birds"
 class_ind = get_labels(datapath)
 class_labels = list(class_ind.keys())
