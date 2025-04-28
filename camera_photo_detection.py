@@ -1,4 +1,6 @@
 from authlib.integrations.flask_client import OAuth
+import nbimporter
+from db_funcs import link_user, get_id, add_bird, get_users_birds
 from flask import Flask, request, jsonify, redirect, session, url_for
 from flask_cors import CORS
 import tensorflow as tf
@@ -66,7 +68,7 @@ def preprocess(image):
 def use_predict_db(pred_class):
     connection = psycopg2.connect(dbname=DB_NAME, user=DB_USER, password=DB_PWD, host=DB_HOST, port=DB_PORT)
     cursor = connection.cursor()
-    cursor.execute("SELECT name, description FROM birds WHERE id=%s", (pred_class,))
+    cursor.execute("SELECT name, description FROM birds WHERE name=%s", (pred_class,))
     result = cursor.fetchone()
 
     output = result[0] + '\n\n' + result[1]
@@ -87,7 +89,10 @@ def predict():
     processed_image = preprocess(image)
     predictions = model.predict(processed_image)
     predicted_class = class_labels[np.argmax(predictions)]
-
+    
+    if 'user' in session:
+        username = session['user']['email']
+        link_user(username, predicted_class)
     return use_predict_db(predicted_class)
 
 if __name__ == "__main__":
