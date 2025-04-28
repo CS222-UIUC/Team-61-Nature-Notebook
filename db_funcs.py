@@ -168,11 +168,15 @@ def add_bird(id, name=None, description=None):
     }
     
     ref.set(birdie)
-
+    
+# Get info of the birds from DB
 def get_bird_info(id):
     ref = db.reference(f"birds/{id}")  
     if ref.get() is None: # Check if bird doesn't exist
         return 
     snapshot = ref.get()
+    data = []  
     for _, bird_info in snapshot.items():
-        return bird_info
+        data.append(bird_info)
+    data.reverse()
+    return data
