@@ -77,6 +77,20 @@ def get_users():
 
     return df # Return data
 
+# Bit string operations for species found
+def init_bitstring():
+    return '0' * 200
+
+def set_bit(bitstring, i, value):    
+    lst = list(bitstring)
+    lst[i - 1] = '1' if value else '0'
+    return ''.join(lst)
+
+def get_bit(bitstring: str, i: int) -> bool:    
+    return bitstring[i - 1] == '1'
+
+def get_all_true_indices(bitstring: str) -> list:
+    return [(i + 1) for i, c in enumerate(bitstring) if c == '1']
 # Functions to add and remove user
 def add_user(username, email, password):
     ref = db.reference(f"users/{username}")  
@@ -88,9 +102,8 @@ def add_user(username, email, password):
         'email': email,
         'password_hash' : hash_pass_text(password).decode('utf-8'),
         'is_active': True,
-        'species_found' : [-1] # Dummy value cause empty list wasn't been pushed to FireBase TODO: implement species found as 200 bit binary string
+        'species_found' : init_bitstring()
     }
-    
     ref.set(user)
 
 def remove_user(username):
@@ -111,13 +124,13 @@ def get_email(username):
 
 def get_species_found(username):
     return get_info(username, 'species_found')
-
+def get_species_found_list(username):
+    return get_all_true_indices(get_species_found(username))
 def get_password(username):
     return get_info(username, 'password_hash')
 
 def get_active_status(username):
     return get_info(username, 'is_active')
-
 # Function to validate password of an user 
 def validate_password(username, pass_check):
     password_hash = get_password(username)
@@ -145,16 +158,22 @@ def update_active(username):
     update_info(username, not curr, 'is_active')
 
 # Add a species id newly found by the user
-def add_species_found(username, species_id):
+def change_species_found_status(username, species_id, status):
     curr_found = get_species_found(username)
-    if (species_id not in curr_found):  # Check if the bird was already found
-        curr_found = curr_found + [species_id]
+    bit = '1' if status == True else '0'
+    if (get_bit(curr_found, species_id) != bit):
+        curr_found = set_bit(curr_found, species_id, status)
         update_info(username, curr_found, 'species_found')
 
+def add_species_found(username, species_id):
+    change_species_found_status(username, species_id, True)
+
+def remove_species_found(username, species_id):
+    change_species_found_status(username, species_id, False)
+        
 # Reset the species found by the user
 def remove_all_species_found(username):
-    update_info(username, [-1], 'species_found')
-
+    update_info(username, init_bitstring(), 'species_found')
 # Function to add birds to DB
 def add_bird(id, name=None, description=None):
     ref = db.reference(f"birds/{id}")  
