@@ -93,7 +93,7 @@ def get_all_true_indices(bitstring: str) -> list:
     return [(i + 1) for i, c in enumerate(bitstring) if c == '1']
 
 # Functions to add and remove user
-def add_user(username, email, password):
+def add_user(username, email, password, species_found = init_bitstring(), password_is_hashed = False):
     ref = db.reference(f"users/{username}")  
     if ref.get() is not None: # Check if user already exists
         return 
@@ -101,9 +101,9 @@ def add_user(username, email, password):
     # Create user dict to push
     user = {
         'email': email,
-        'password_hash' : hash_pass_text(password).decode('utf-8'),
+        'password_hash' : hash_pass_text(password).decode('utf-8') if not password_is_hashed else password,
         'is_active': True,
-        'species_found' : init_bitstring()
+        'species_found' : species_found
     }
     
     ref.set(user)
@@ -149,7 +149,8 @@ def update_info(username, new_what, what):
 
 # Update observation's data functions
 def update_username(username, new_username):
-    update_info(username, new_username, 'user')
+    add_user(new_username, get_email(username), get_password(username), get_species_found(username), True)
+    remove_user(username)
 
 def update_email(username, new_email):
     update_info(username, new_email, 'email')
@@ -205,3 +206,4 @@ def get_bird_info(id):
         data.append(bird_info)
     data.reverse()
     return data
+
