@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 import {
   View,
   Text,
@@ -7,74 +7,213 @@ import {
   SafeAreaView,
   Modal,
   Image,
+  ScrollView,
+  Platform 
 } from 'react-native';
-import { Camera } from 'expo-camera';
+import Webcam from 'react-webcam';
+import { saveAs } from 'file-saver';
+import {useFocusEffect, useRouter} from 'expo-router';
+const LOCAL_IP = '10.0.2.2';
+const LAN_FALLBACK = 'http://localhost:5000';
+const BACKEND_URL = Platform.select({
+    android: `http://${LOCAL_IP}:5000`,
+    ios: LAN_FALLBACK,
+    default: LAN_FALLBACK,
+  });
+
 
 export default function Home() {
-  const [hasPermission, setHasPermission] = useState(null);
   const [showCamera, setShowCamera] = useState(false);
-  const [showNotebook, setShowNotebook] = useState(false); // Notebook modal state
+  const [showNotebook, setShowNotebook] = useState(false);
+  const [showSettings, setShowSettings] = useState(false);
   const [photoUri, setPhotoUri] = useState(null);
-  const cameraRef = useRef(null);
+  const [username, setUsername] = useState('');
 
-  // Request camera permissions
-  useEffect(() => {
-    (async () => {
-      const { status } = await Camera.requestCameraPermissionsAsync();
-      setHasPermission(status === 'granted');
-    })();
-  }, []);
-
-  const takePicture = async () => {
-    if (!cameraRef.current) return;
-    const photo = await cameraRef.current.takePictureAsync();
-    setPhotoUri(photo.uri);
-    setShowCamera(false);
+  const [notebookData, setNotebookData] = useState([]);
+  const [expandedIndex, setExpandedIndex] = useState(-1);
+  const fetchNotebook = async () => {
+    try {
+      const res = await fetch(`${BACKEND_URL}/notebook`, {
+        method: 'GET',
+        credentials: 'include',
+      });
+      if(res.ok) {
+        const data = await res.json();
+        setNotebookData(data);
+      }
+    } catch (err) {
+      console.error('Error fetching notebook:', err);
+    }
   };
 
-  // Permission loading / denial
-  if (hasPermission === null) {
-    return <CenteredText>Requesting camera permissions…</CenteredText>;
-  }
-  if (hasPermission === false) {
-    return <CenteredText>No access to camera</CenteredText>;
-  }
+  const router = useRouter();
+
+  const handleLogout = async() => {
+    try {
+      const res = await fetch(`${BACKEND_URL}/logout`, {
+        method: 'POST',
+        credentials: 'include',
+      }); if(res.ok){
+        setUsername('');
+        router.replace('/sign-in');
+      }
+    } catch (err){
+      console.error('Logout failed:', err);
+    }
+  };
+
+
+  useFocusEffect(
+    useCallback(() => {
+      const fetchUser = async () => {
+        try {
+          const res = await fetch(`${BACKEND_URL}/me`, {
+            method: 'GET',
+            credentials: 'include',
+          });
+          if (res.ok) {
+            const data = await res.json();
+            setUsername(data.username);
+          } else {
+            setUsername('');
+          }
+        } catch (err) {
+          console.log('Error fetching user:', err);
+        }
+      };
+  
+      fetchUser();
+    }, [])
+  );
+
+  const webcamRef = useRef(null);
+
+  const capture = useCallback(async () => {
+    const imageSrc = webcamRef.current.getScreenshot();
+    if (!imageSrc) return;
+  
+    setPhotoUri(imageSrc);
+    const res = await fetch(imageSrc);
+    const blob = await res.blob();
+  
+    // Create FormData to send to Flask
+    const formData = new FormData();
+    formData.append('file', blob, `snap_${Date.now()}.jpg`);
+  
+    try {
+      const response = await fetch('http://localhost:5000/predict', {
+        method: 'POST',
+        body: formData,
+        credentials: 'include',
+      });
+  
+      const result = await response.json();
+      console.log('Predicted class:', result);
+    } catch (err) {
+      console.error('Prediction error:', err);
+    }
+  
+    setShowCamera(false);
+  }, []);
 
   return (
     <SafeAreaView style={styles.container}>
-      {/* Camera Modal */}
-      <Modal visible={showCamera} animationType="slide" onRequestClose={() => setShowCamera(false)}>
-        <Camera style={styles.camera} ref={cameraRef}>
+      {/* Browser-Camera Modal */}
+      <Modal
+        visible={showCamera}
+        animationType="slide"
+        onRequestClose={() => setShowCamera(false)}
+      >
+        <View style={styles.cameraContainer}>
+          <Webcam
+            audio={false}
+            ref={webcamRef}
+            screenshotFormat="image/jpeg"
+            style={styles.webcam}
+          />
           <View style={styles.cameraControls}>
-            <TouchableOpacity style={styles.snapButton} onPress={takePicture}>
+            <TouchableOpacity style={styles.snapButton} onPress={capture}>
               <Text style={styles.snapText}>SNAP</Text>
             </TouchableOpacity>
-            <TouchableOpacity style={styles.closeButton} onPress={() => setShowCamera(false)}>
+            <TouchableOpacity
+              style={styles.closeButton}
+              onPress={() => setShowCamera(false)}
+            >
               <Text style={styles.closeText}>CANCEL</Text>
             </TouchableOpacity>
           </View>
-        </Camera>
+        </View>
       </Modal>
+    
+    
+    <View style={styles.header}>
+      <Text style={styles.title}>Nature Notebook</Text>
+      <Text style={styles.greeting}>
+      {username ? `Hi, ${username}` : 'Not Signed In'}
+      </Text>
+    </View>
 
       {/* Notebook Modal */}
-      <Modal visible={showNotebook} animationType="slide" onRequestClose={() => setShowNotebook(false)}>
+      <Modal
+        visible={showNotebook}
+        animationType="slide"
+        onRequestClose={() => setShowNotebook(false)}
+      >
         <SafeAreaView style={styles.notebookContainer}>
           <Text style={styles.notebookTitle}>My Notebook</Text>
-          <View style={styles.grid}>
-            {Array.from({ length: 12 }).map((_, i) => (
-              <View key={i} style={styles.placeholder} />
-            ))}
-          </View>
-          <TouchableOpacity style={styles.closeNotebook} onPress={() => setShowNotebook(false)}>
+          <ScrollView contentContainerStyle={styles.grid}>
+          {notebookData.map((bird, i) => (
+            <TouchableOpacity
+            key={bird.id}
+            style={styles.birdBox}
+            onPress={() => setExpandedIndex(expandedIndex === i ? -1 : i)}
+          >          
+              <Text style={styles.birdName}>{bird.name}</Text>
+              {expandedIndex === i && (
+                <Text style={styles.birdDescription}>{bird.description}</Text>
+              )}
+            </TouchableOpacity>
+          ))}
+          </ScrollView>
+          <TouchableOpacity
+            style={styles.closeNotebookFull}
+            onPress={() => setShowNotebook(false)}
+          >
             <Text style={styles.buttonText}>Close</Text>
           </TouchableOpacity>
         </SafeAreaView>
       </Modal>
-
-      {/* Header */}
-      <View style={styles.header}>
-        <Text style={styles.title}>Nature Notebook</Text>
-      </View>
+      
+      {/* Settings Modal */}
+      <Modal
+        visible={showSettings}
+        animationType="slide"
+        onRequestClose={() => setShowSettings(false)}
+      >
+        <SafeAreaView style={styles.settingsContainer}>
+          <Text style={styles.settingsTitle}>Settings</Text>
+          <View style={styles.settingsButtons}>
+            <TouchableOpacity style={styles.settingsButton}>
+              <Text style={styles.settingsButtonText}>Change Username</Text>
+            </TouchableOpacity>
+            <TouchableOpacity style={styles.settingsButton}>
+              <Text style={styles.settingsButtonText}>Email</Text>
+            </TouchableOpacity>
+            <TouchableOpacity style={styles.settingsButton}>
+              <Text style={styles.settingsButtonText}>Password</Text>
+            </TouchableOpacity>
+            <TouchableOpacity style={styles.settingsButton}>
+              <Text style={styles.settingsButtonText}>Reset Progress</Text>
+            </TouchableOpacity>
+          </View>
+          <TouchableOpacity
+            style={styles.closeNotebook}
+            onPress={() => setShowSettings(false)}
+          >
+            <Text style={styles.buttonText}>Close</Text>
+          </TouchableOpacity>
+        </SafeAreaView>
+      </Modal>
 
       {/* Preview */}
       {photoUri && (
@@ -86,27 +225,39 @@ export default function Home() {
 
       {/* Buttons */}
       <View style={styles.buttonContainer}>
-        <TouchableOpacity style={[styles.button, styles.fixedWidth]} onPress={() => setShowCamera(true)}>
+        <TouchableOpacity
+          style={[styles.button, styles.fixedWidth]}
+          onPress={() => setShowCamera(true)}
+        >
           <Text style={styles.buttonText}>Scan Animal</Text>
         </TouchableOpacity>
 
-        <TouchableOpacity style={[styles.buttonSecondary, styles.fixedWidth]} onPress={() => setShowNotebook(true)}>
+        <TouchableOpacity
+          style={[styles.buttonSecondary, styles.fixedWidth]}
+          onPress={() => {
+            fetchNotebook();
+            setShowNotebook(true);
+          }}
+        >
           <Text style={styles.buttonText}>View Notebook</Text>
         </TouchableOpacity>
 
-        <TouchableOpacity style={[styles.buttonSecondary, styles.fixedWidth]}>
+        {username && (
+      <TouchableOpacity onPress={handleLogout} style={styles.logoutButton}>
+        <Text style={styles.buttonText}>Logout</Text>
+      </TouchableOpacity>
+        )}
+
+
+        {/* IN PROGRESS -- BUTTON NOT AVAILABLE CURRENTLY
+        <TouchableOpacity
+          style={[styles.buttonSecondary, styles.fixedWidth]}
+          onPress={() => setShowSettings(true)}
+        >
           <Text style={styles.buttonText}>Settings</Text>
         </TouchableOpacity>
+        */}
       </View>
-    </SafeAreaView>
-  );
-}
-
-// Stateless centered text component
-function CenteredText({ children }) {
-  return (
-    <SafeAreaView style={styles.centered}>
-      <Text>{children}</Text>
     </SafeAreaView>
   );
 }
@@ -121,33 +272,198 @@ const COLORS = {
 
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: COLORS.nyanza, padding: 20 },
-  centered: { flex: 1, justifyContent: 'center', alignItems: 'center' },
 
   header: { flex: 1, justifyContent: 'center', alignItems: 'center' },
   title: { fontSize: 48, fontWeight: 'bold', color: COLORS.darkBrown },
 
-  preview: { alignItems: 'center', marginBottom: 20 },
-  previewLabel: { fontSize: 16, marginBottom: 8 },
-  previewImage: { width: 200, height: 200, borderRadius: 12 },
+  preview: {
+    alignItems: 'center',
+    marginVertical: 30,
+  },
+  previewLabel: {
+    fontSize: 18,
+    fontWeight: '600',
+    marginBottom: 10,
+    color: COLORS.darkBrown,
+  },
+  previewImage: {
+    width: 320,
+    height: 320,
+    borderRadius: 16,
+    borderWidth: 2,
+    borderColor: COLORS.darkBrown,
+  },
 
-  buttonContainer: { flex: 1, justifyContent: 'flex-end', alignItems: 'center', paddingBottom: 60 },
-  button: { backgroundColor: COLORS.ecru, padding: 16, borderRadius: 12, marginBottom: 20, alignItems: 'center' },
-  buttonSecondary: { backgroundColor: COLORS.sage, padding: 16, borderRadius: 12, marginBottom: 20, alignItems: 'center' },
+  buttonContainer: {
+    flex: 1,
+    justifyContent: 'flex-end',
+    alignItems: 'center',
+    paddingBottom: 60,
+  },
+  button: {
+    backgroundColor: COLORS.ecru,
+    padding: 16,
+    borderRadius: 12,
+    marginBottom: 20,
+    alignItems: 'center',
+  },
+  buttonSecondary: {
+    backgroundColor: COLORS.sage,
+    padding: 16,
+    borderRadius: 12,
+    marginBottom: 20,
+    alignItems: 'center',
+  },
   fixedWidth: { width: '80%' },
-  buttonText: { color: COLORS.darkBrown, fontSize: 18, fontWeight: '600' },
+  buttonText: {
+    color: COLORS.darkBrown,
+    fontSize: 18,
+    fontWeight: '600',
+  },
 
-  // Camera styles
-  camera: { flex: 1 },
-  cameraControls: { flex: 1, backgroundColor: 'transparent', justifyContent: 'flex-end', alignItems: 'center', paddingBottom: 20 },
-  snapButton: { width: 70, height: 70, borderRadius: 35, backgroundColor: 'white', justifyContent: 'center', alignItems: 'center', marginBottom: 15 },
+  // Webcam styles
+  cameraContainer: {
+    flex: 1,
+    backgroundColor: COLORS.nyanza,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  webcam: {
+    width: '100%',
+    height: '75%',
+  },
+  cameraControls: {
+    position: 'absolute',
+    bottom: 40,
+    flexDirection: 'row',
+    justifyContent: 'space-around',
+    width: '100%',
+    paddingHorizontal: 20,
+  },
+  snapButton: {
+    width: 70,
+    height: 70,
+    borderRadius: 35,
+    backgroundColor: 'white',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
   snapText: { fontWeight: 'bold' },
-  closeButton: { position: 'absolute', top: 40, left: 20, padding: 10 },
-  closeText: { color: 'white', fontSize: 18 },
+  closeButton: {
+    padding: 10,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  closeText: { color: COLORS.darkBrown, fontSize: 18 },
 
   // Notebook styles
-  notebookContainer: { flex: 1, backgroundColor: COLORS.nyanza, padding: 20 },
-  notebookTitle: { fontSize: 32, fontWeight: 'bold', color: COLORS.darkBrown, textAlign: 'center', marginBottom: 20 },
-  grid: { flexDirection: 'row', flexWrap: 'wrap', justifyContent: 'space-between' },
-  placeholder: { width: '30%', aspectRatio: 1, backgroundColor: COLORS.sage, marginBottom: 15, borderRadius: 8 },
-  closeNotebook: { backgroundColor: COLORS.ecru, padding: 15, borderRadius: 10, alignItems: 'center', marginTop: 20 },
+  notebookContainer: {
+    flex: 1,
+    backgroundColor: COLORS.nyanza,
+    padding: 20,
+  },
+  notebookTitle: {
+    fontSize: 32,
+    fontWeight: 'bold',
+    color: COLORS.darkBrown,
+    textAlign: 'center',
+    marginBottom: 20,
+  },
+  grid: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    justifyContent: 'space-around',
+  },
+  placeholder: {
+    width: '28%',
+    aspectRatio: 1,
+    backgroundColor: COLORS.sage,
+    marginBottom: 15,
+    borderRadius: 8,
+  },
+  closeNotebook: {
+    backgroundColor: COLORS.ecru,
+    padding: 15,
+    borderRadius: 10,
+    alignItems: 'center',
+    marginTop: 20,
+    width: '80%',
+  },
+  closeNotebookFull: {
+    backgroundColor: COLORS.ecru,
+    padding: 15,
+    borderRadius: 10,
+    alignItems: 'center',
+    marginTop: 20,
+    width: '100%',
+  },
+  
+
+  // Settings styles
+  settingsContainer: {
+    flex: 1,
+    backgroundColor: COLORS.nyanza,
+    justifyContent: 'center',
+    alignItems: 'center',
+    padding: 20,
+  },
+  settingsTitle: {
+    fontSize: 32,
+    fontWeight: 'bold',
+    color: COLORS.darkBrown,
+    textAlign: 'center',
+    marginBottom: 20,
+  },
+  settingsButtons: {
+    width: '80%',
+    alignItems: 'center',
+  },
+  settingsButton: {
+    backgroundColor: COLORS.sage,
+    padding: 16,
+    borderRadius: 12,
+    alignItems: 'center',
+    width: '100%',
+    marginBottom: 15,
+  },
+  
+  settingsButtonText: {
+    fontSize: 18,
+    color: COLORS.darkBrown,
+    fontWeight: '600',
+  },
+  greeting: {
+    position: 'absolute',
+    top: 20,
+    right: 20,
+    fontSize: 16,
+    color: COLORS.darkBrown,
+    fontWeight: '600',
+  },  
+  logoutButton: {
+    backgroundColor: COLORS.walnut,
+    padding: 10,
+    borderRadius: 8,
+    marginTop: 10,
+  },
+  birdBox: {
+    width: '45%',
+    backgroundColor: COLORS.sage,
+    borderRadius: 10,
+    padding: 10,
+    marginBottom: 15,
+    alignItems: 'center',
+  },
+  birdName: {
+    fontSize: 16,
+    fontWeight: 'bold',
+    color: COLORS.darkBrown,
+    textAlign: 'center',
+  },
+  birdDescription: {
+    marginTop: 8,
+    fontSize: 14,
+    color: COLORS.darkBrown,
+    textAlign: 'center',
+  },  
 });

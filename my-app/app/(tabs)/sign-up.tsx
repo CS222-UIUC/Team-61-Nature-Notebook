@@ -33,6 +33,7 @@ export default function SignUpScreen() {
                 method: 'POST',
                 headers: { 'Content-Type' : 'application/json'},
                 body: JSON.stringify({email, username, password}),
+                credentials: 'include'
             });
 
             const data = await res.json();
@@ -82,7 +83,7 @@ export default function SignUpScreen() {
           onPress={() => setShowPassword(!showPassword)}
         >
           <Text style={styles.toggleButtonText}>
-            {showPassword ? 'H' : 'S'}
+            {showPassword ? 'Hide' : 'Show'}
           </Text>
         </TouchableOpacity>
       </View>
