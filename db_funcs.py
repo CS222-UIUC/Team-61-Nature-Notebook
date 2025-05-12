@@ -181,7 +181,11 @@ def change_species_found_status(username, species_id, status):
         update_info(username, curr_found, 'species_found')
 
 def add_species_found(username, species_id):
-    change_species_found_status(username, species_id, True)
+    print(username)
+    print(species_id)
+    species_label = int(species_id.split('.')[0])
+    print(species_label)
+    change_species_found_status(username, species_label, True)
 
 def remove_species_found(username, species_id):
     change_species_found_status(username, species_id, False)
@@ -210,12 +214,8 @@ def add_bird(id, name=None, description=None):
     
 # Get info of the birds from DB
 def get_bird_info(id):
-    ref = db.reference(f"birds/{id}")  
-    if ref.get() is None: # Check if bird doesn't exist
-        return 
+    ref = db.reference(f"birds/{id}")
     snapshot = ref.get()
-    data = []  
-    for _, bird_info in snapshot.items():
-        data.append(bird_info)
-    data.reverse()
-    return data
+    if snapshot is None:
+        return {"error": "Bird not found"}
+    return snapshot

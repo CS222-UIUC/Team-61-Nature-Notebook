@@ -10,7 +10,7 @@ import {
   Platform
 } from 'react-native';
 import {Link, useRouter} from 'expo-router';
-
+import { saveAs } from 'file-saver';
 const LOCAL_IP = '10.0.2.2';
 const LAN_FALLBACK = 'http://localhost:5000';
 const BACKEND_URL = Platform.select({
@@ -24,6 +24,7 @@ export default function SignIn() {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
   const router = useRouter();
 
   const handleSignIn = async () => {
@@ -32,6 +33,7 @@ export default function SignIn() {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ username, password }),
+      credentials: 'include',
     });
     
     const data = await res.json();
@@ -58,14 +60,25 @@ export default function SignIn() {
           onChangeText={setUsername}
         />
 
-        <TextInput
-          style={styles.input}
-          placeholder="Password"
-          placeholderTextColor={COLORS.walnut}
-          secureTextEntry
-          value={password}
-          onChangeText={setPassword}
-        />
+<View style={styles.passwordContainer}>
+  <TextInput
+    style={styles.passwordInput}
+    placeholder="Password"
+    placeholderTextColor={COLORS.walnut}
+    secureTextEntry={!showPassword}
+    value={password}
+    onChangeText={setPassword}
+  />
+  <TouchableOpacity
+    style={styles.toggleButton}
+    onPress={() => setShowPassword(prev => !prev)}
+  >
+    <Text style={styles.toggleButtonText}>
+      {showPassword ? 'Hide' : 'Show'}
+    </Text>
+  </TouchableOpacity>
+</View>
+
 
         {error ? <Text style={styles.error}>{error}</Text> : null}
 
@@ -145,5 +158,28 @@ const styles = StyleSheet.create({
     color: 'red',
     textAlign: 'center',
     marginBottom: 12,
-  },  
+  }, 
+  passwordContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: COLORS.sage,
+    borderRadius: 10,
+    marginBottom: 20,
+  },
+  passwordInput: {
+    flex: 1,
+    padding: 15,
+    fontSize: 16,
+    color: COLORS.darkBrown,
+  },
+  toggleButton: {
+    paddingHorizontal: 12,
+    paddingVertical: 15,
+    borderLeftWidth: 1,
+    borderColor: COLORS.walnut,
+  },
+  toggleButtonText: {
+    color: COLORS.darkBrown,
+    fontWeight: '600',
+  },   
 });

@@ -25,6 +25,8 @@ def complete_signup():
     
     sanitized_username = username.replace('.', '_').replace('@', '_')
     add_user(sanitized_username, email, password)
+
+    session['user'] = {"email" : get_email(username), "username" : username}
     return jsonify({"status": "success"}), 200
 
 @signup_bp.route('/login', methods=['POST'])
@@ -40,5 +42,10 @@ def login():
     if not validate_password(username, password):
         return jsonify({"error": "Incorrect Password"}), 409
     
-    session['user'] = {"email": get_email(username)}
+    session['user'] = {"email": get_email(username), "username" : username}
     return jsonify({"status": "success"}), 200
+
+@signup_bp.route('/logout', methods=['POST'])
+def logout():
+    session.pop('user', None)
+    return jsonify({"status": "logged out"}), 200
