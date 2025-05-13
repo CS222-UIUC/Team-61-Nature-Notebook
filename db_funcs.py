@@ -183,7 +183,7 @@ def change_species_found_status(username, species_id, status):
 def add_species_found(username, species_id):
     print(username)
     print(species_id)
-    species_label = int(species_id.split('.')[0])
+    species_label = int(species_id)
     print(species_label)
     change_species_found_status(username, species_label, True)
 
