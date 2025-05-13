@@ -14,9 +14,9 @@ import Webcam from 'react-webcam';
 import { saveAs } from 'file-saver';
 import {useFocusEffect, useRouter} from 'expo-router';
 const LOCAL_IP = '10.0.2.2';
-const LAN_FALLBACK = 'http://localhost:5000';
+const LAN_FALLBACK = 'http://localhost:1109';
 const BACKEND_URL = Platform.select({
-    android: `http://${LOCAL_IP}:5000`,
+    android: `http://${LOCAL_IP}:1109`,
     ios: LAN_FALLBACK,
     default: LAN_FALLBACK,
   });
@@ -144,7 +144,7 @@ export default function Home() {
       });
   
       const result = await response.json();
-      setLastSpecies(result.name.split('.').slice(1).join('.'));
+      setLastSpecies(result.name);
       console.log('Predicted class:', result);
     } catch (err) {
       console.error('Prediction error:', err);

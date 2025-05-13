@@ -3,9 +3,9 @@ import {Platform, View, Text, TextInput, TouchableOpacity, StyleSheet, SafeAreaV
 import {useRouter} from 'expo-router';
 
 const LOCAL_IP = '10.0.2.2';
-const LAN_FALLBACK = 'http://localhost:5000';
+const LAN_FALLBACK = 'http://localhost:1109';
 const BACKEND_URL = Platform.select({
-    android: `http://${LOCAL_IP}:5000`,
+    android: `http://${LOCAL_IP}:1109`,
     ios: LAN_FALLBACK,
     default: LAN_FALLBACK,
   });  
