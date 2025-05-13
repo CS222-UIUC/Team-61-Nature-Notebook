@@ -112,7 +112,7 @@ export default function Home() {
         });
   
         const result = await res.json();
-        setLastSpecies(result.name.split('.').slice(1).join('.'));
+        setLastSpecies(result.name);
         console.log('Predicted class from file:', result);
       } catch (err) {
         console.error('Upload prediction error:', err);
