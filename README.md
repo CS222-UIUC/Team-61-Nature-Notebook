@@ -15,6 +15,8 @@ Now navigate to an empty source folder for the project and run in terminal, in t
 - ```npx create-expo-app nature-notebook```
 - ```cd nature-notebook```
 - ```npm install react-webcam```
+- ```npm install expo-router```
+- ```npm install file-saver```
 
 ## Group members
 **Nihar Kalode:** Built backend and database to store bird data, as well as sign in functionalities using Firebase  
