@@ -17,6 +17,9 @@ Now navigate to an empty source folder for the project and run in terminal, in t
 - ```npm install react-webcam```
 - ```npm install expo-router```
 - ```npm install file-saver```
+- ```git clone https://github.com/CS222-UIUC/Team-61-Nature-Notebook.git .```
+- ```npm install```
+- 
 
 ## Group members
 **Nihar Kalode:** Built backend and database to store bird data, as well as sign in functionalities using Firebase  
