@@ -6,11 +6,11 @@ After creating an account and signing in, users can
 - save discovered birds to their notebook, and
 - view descriptions and information on birds they catalog
 
-
 ## Technical Architecture
 ![Flowchart CS222](https://github.com/user-attachments/assets/7bab3bc9-e572-4bf8-8349-34c194e9a8d7)
 
 ## Installation Instructions
+
 
 ## Group members
 **Nihar Kalode:** Built backend and database to store bird data, as well as sign in functionalities using Firebase  
