@@ -25,12 +25,12 @@ init_oauth(app)
 app.register_blueprint(oauth_blueprint)
 app.register_blueprint(signup_bp)
 
-mpath = 'C:\\Users\\kshar\\nature_notebook\\nature_classifier_updated.keras'
+mpath = 'model/nature_classifier_updated.keras'
 model = tf.keras.models.load_model(mpath)
 
 
 # Connect to FireBase DB
-cred = credentials.Certificate('credentials.json')
+cred = credentials.Certificate('src/credentials.json')
 
 if not firebase_admin._apps:
     cred = credentials.Certificate('credentials.json')
