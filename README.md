@@ -1,5 +1,5 @@
 # Introduction
-## Nature Notebook: an automatic journal
+## Nature Notebook: an automatic bird journal
 Nature Notebook is an interactive app that enables bird lovers to track their exploration and discovery of birds over time, all while learning more about the birds in their community.
 After creating an account and signing in, users can
 - take a photo of any bird they see to have its species detected,
