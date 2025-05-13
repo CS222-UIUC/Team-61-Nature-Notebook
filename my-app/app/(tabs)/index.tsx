@@ -32,7 +32,7 @@ export default function Home() {
   const [notebookData, setNotebookData] = useState([]);
   const [expandedIndex, setExpandedIndex] = useState(-1);
   const [lastSpecies, setLastSpecies] = useState('');
-
+  const [lastSpeciesNum, setLastSpeciesNum] = useState('');
   const fetchNotebook = async () => {
     try {
       const res = await fetch(`${BACKEND_URL}/notebook`, {
@@ -113,13 +113,14 @@ export default function Home() {
   
         const result = await res.json();
         setLastSpecies(result.name);
+        setLastSpeciesNum(result.id);
         console.log('Predicted class from file:', result);
       } catch (err) {
         console.error('Upload prediction error:', err);
       }
     };
   
-    reader.readAsDataURL(file); // ✅ gives base64 URI
+    reader.readAsDataURL(file);
   };
   
   
@@ -145,6 +146,7 @@ export default function Home() {
   
       const result = await response.json();
       setLastSpecies(result.name);
+      setLastSpeciesNum(result.id);
       console.log('Predicted class:', result);
     } catch (err) {
       console.error('Prediction error:', err);
@@ -204,7 +206,7 @@ export default function Home() {
             style={styles.birdBox}
             onPress={() => setExpandedIndex(expandedIndex === i ? -1 : i)}
           >          
-              <Text style={styles.birdName}>{bird.name}</Text>
+              <Text style={styles.birdName}> (#{bird.id}) {bird.name} </Text>
               {expandedIndex === i && (
                 <Text style={styles.birdDescription}>{bird.description}</Text>
               )}
@@ -255,7 +257,7 @@ export default function Home() {
       {photoUri && (
         <View style={styles.preview}>
           <Text style={styles.previewLabel}>
-          Last Photo: {lastSpecies.replace(/[_-]/g, ' ')}</Text>
+          Last Photo: {lastSpecies.replace(/[_-]/g, ' ')} </Text>
 
           <Image source={{ uri: photoUri }} style={styles.previewImage} />
         </View>
