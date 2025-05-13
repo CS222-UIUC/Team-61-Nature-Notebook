@@ -1,8 +1,3 @@
-"""
-
-
-
-"""
 from authlib.integrations.flask_client import OAuth
 import firebase_admin
 from db_funcs import add_species_found, get_bird_info, get_species_found_list
@@ -100,6 +95,7 @@ def predict():
     print("Bird info:", species_info)
 
     return jsonify({
+        "id" : int(predicted_class+1),
         "name": species_info.get("name"),
         "description": species_info.get("description", "")
     })
