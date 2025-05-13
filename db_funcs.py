@@ -46,6 +46,21 @@ class User:
 
     def __repr__(self):
         return (f"User(id={self.user_id}, username='{self.username}')")
+# Clear Email of Invalid Letters
+def modify(email):
+    return email.replace('.', '_').replace('@','_')
+
+#Checks if an email, checked_email, does exist
+def email_exists(checked_email):
+    ref = db.reference('users/')
+    users = ref.get()
+    if users is None:
+        return False
+    
+    for user_data in users.values():
+        if user_data.get('email') == checked_email:
+            return True
+    return False
 
 # Password hashing and checking functions
 def hash_pass_text(password_text):
@@ -166,7 +181,11 @@ def change_species_found_status(username, species_id, status):
         update_info(username, curr_found, 'species_found')
 
 def add_species_found(username, species_id):
-    change_species_found_status(username, species_id, True)
+    print(username)
+    print(species_id)
+    species_label = int(species_id.split('.')[0])
+    print(species_label)
+    change_species_found_status(username, species_label, True)
 
 def remove_species_found(username, species_id):
     change_species_found_status(username, species_id, False)
@@ -174,6 +193,11 @@ def remove_species_found(username, species_id):
 # Reset the species found by the user
 def remove_all_species_found(username):
     update_info(username, init_bitstring(), 'species_found')
+
+def username_exists(user):
+    ref = db.reference(f'users/{user}')
+    return ref.get() is not None
+
 # Function to add birds to DB
 def add_bird(id, name=None, description=None):
     ref = db.reference(f"birds/{id}")  
@@ -190,12 +214,8 @@ def add_bird(id, name=None, description=None):
     
 # Get info of the birds from DB
 def get_bird_info(id):
-    ref = db.reference(f"birds/{id}")  
-    if ref.get() is None: # Check if bird doesn't exist
-        return 
+    ref = db.reference(f"birds/{id}")
     snapshot = ref.get()
-    data = []  
-    for _, bird_info in snapshot.items():
-        data.append(bird_info)
-    data.reverse()
-    return data
+    if snapshot is None:
+        return {"error": "Bird not found"}
+    return snapshot

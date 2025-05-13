@@ -1,0 +1,10 @@
+{
+  "dependencies": {
+    "expo": "^53.0.4",
+    "expo-camera": "^16.1.6",
+    "expo-router": "^3.4.0",
+    "react": "19.1.0",
+    "react-dom": "19.1.0",
+    "react-native": "^0.79.2"
+  }
+}

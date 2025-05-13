@@ -1,6 +1,6 @@
 from authlib.integrations.flask_client import OAuth
 import firebase_admin
-from db_funcs import add_species_found, get_bird_info
+from db_funcs import add_species_found, get_bird_info, get_species_found_list
 from flask import Flask, request, jsonify, redirect, session, url_for
 from flask_cors import CORS
 import tensorflow as tf
@@ -9,44 +9,27 @@ from PIL import Image
 import io
 import os
 from firebase_admin import credentials
-
+from auth import oauth_blueprint, init_oauth
+from functools import wraps
+from dotenv import load_dotenv
+from signup_semantics import signup_bp
 def get_labels(datapth):
     class_labels = sorted(os.listdir(datapath))
     class_indexed = {class_label :  index for index, class_label in enumerate(class_labels)}
     return class_indexed
 
+load_dotenv()
+
 app = Flask(__name__)
-CORS(app)
-app.secret_key = os.getenv("SECRET_KEY", "lentil1025")
-"""
-oauth = OAuth(app)
-google_oauth = oauth.register(
-    name='google'
-    client_id='YOUR_CLIENT_ID',
-    client_secret='YOUR_CLIENT_SECRET',
-    authorize_url='https://accounts.google.com/o/oauth2/auth',
-    access_token_url='https://oauth2.googleapis.com/token',
-    client_kwargs={'scope': 'openid email profile'},
-)
+CORS(app, supports_credentials=True, origins=["http://localhost:8081", "http://localhost:5000", "localhost:8081", "localhost:5000", "http://localhost:8081/sign-up"])
+app.secret_key = os.getenv("SECRET_KEY", "airtag2")
 
-@app.route('/login')
-def login():
-    return google_oauth.authorize_redirect(url_for('authorize', _external = True))
-@app.route('/logout')
+init_oauth(app)
 
-@app.route('/authorize')
+app.register_blueprint(oauth_blueprint)
+app.register_blueprint(signup_bp)
 
-@app.route()
-
-def login_required(func):
-    @wraps(func)
-    def decorate(*args, **kwargs):
-        if 'user' not in session:
-            return jsonify({"error" : "Unauthorized"}), 401
-        return func(*args, **kwargs)
-    return decorate
-"""
-mpath = 'C:\\Users\\kshar\\nature_notebook\\nature_classifier.keras'
+mpath = 'C:\\Users\\kshar\\nature_notebook\\nature_classifier_updated.keras'
 model = tf.keras.models.load_model(mpath)
 datapath = "C:\\Users\\kshar\\OneDrive\\Desktop\\Birds"
 class_ind = get_labels(datapath)
@@ -62,6 +45,13 @@ if not firebase_admin._apps:
         'databaseURL': 'https://nature-notebook-db-default-rtdb.firebaseio.com/'
     })
 
+def login_required(func):
+    @wraps(func)
+    def wrapper(*args, **kwargs):
+        if 'user' not in session:
+            return jsonify({"error" : "Unauthorized"}), 401
+        return func(*args, **kwargs)
+    return wrapper
 
 def preprocess(image):
     image = image.resize((224,224))
@@ -70,7 +60,6 @@ def preprocess(image):
     return image
 
 @app.route("/predict", methods=["POST"])
-#@login_required
 def predict():
     if "file" not in request.files:
         return jsonify({"error": "No file provided"}), 400
@@ -81,11 +70,42 @@ def predict():
     processed_image = preprocess(image)
     predictions = model.predict(processed_image)
     predicted_class = class_labels[np.argmax(predictions)]
-    
+    print('user' in session)
     if 'user' in session:
-        username = session['user']['email']
+        username = session['user']['username']
         add_species_found(username, predicted_class)
     return get_bird_info(predicted_class)
+
+@app.route("/notebook", methods=['GET'])
+@login_required
+def get_notebook():
+    username = session['user']['username']
+    found_ids = get_species_found_list(username) 
+    species_info = []
+    print(found_ids)
+
+    for species_id in found_ids:
+        try:
+            bird_key = class_labels[species_id]
+            info = get_bird_info(species_id)
+            if info:
+                species_info.append({
+                    "id": bird_key,
+                    "name": info.get("name", "Unknown"),
+                    "description": info.get("description", ""),
+                })
+        except IndexError:
+            continue
+    print(species_info)
+    return jsonify(species_info)
+
+
+@app.route('/me', methods=['GET'])
+def get_current_user():
+    user = session.get('user')
+    if not user:
+        return jsonify({"error": "Not logged in"}), 401
+    return jsonify({"email": user['email'], "username" : user['username']})
 
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=5000, debug=True)
