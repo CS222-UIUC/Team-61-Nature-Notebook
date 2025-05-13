@@ -1,9 +1,26 @@
+"""
+
+This File Handles Backend Logic for User Sign-Up, Login, and Logout Functionality.
+Defines Routes for Registering New Users, User Authentication, 
+and Session Management through Flask Blueprint 'signup_bp'
+Database interactions handled through helper functions from 'db_funcs' file.
+
+@author Kartikey Sharma
+
+"""
 from flask import Blueprint, Flask, request, jsonify, session
 from db_funcs import add_user, email_exists, get_email, username_exists
 from db_funcs import validate_password
-signup_bp = Blueprint('signup', __name__)
+signup_bp = Blueprint('signup', __name__) # This Signup Blueprint is X
 
-# This is how you Sign Up WITHOUT OAuth
+
+
+"""
+Handles user registration by validating input and adding a user to the database.
+On successful signup, creates session for new user (automatically logs in new user),
+and returns a success response. On failure, returns error message describing the cause
+of failure.
+"""
 @signup_bp.route('/complete-signup', methods=['POST'])
 def complete_signup():
     data = request.json
@@ -29,6 +46,13 @@ def complete_signup():
     session['user'] = {"email" : get_email(username), "username" : username}
     return jsonify({"status": "success"}), 200
 
+"""
+Autenticates user by checking if username exists and password is correct.
+
+If authentication is successful, initializes session with users information.
+
+Returns a success response upon successful sign-in, or errror message X.
+"""
 @signup_bp.route('/login', methods=['POST'])
 def login():
     data = request.json
@@ -45,6 +69,9 @@ def login():
     session['user'] = {"email": get_email(username), "username" : username}
     return jsonify({"status": "success"}), 200
 
+"""
+Logs out current user by clearing the current session data.
+"""
 @signup_bp.route('/logout', methods=['POST'])
 def logout():
     session.pop('user', None)
