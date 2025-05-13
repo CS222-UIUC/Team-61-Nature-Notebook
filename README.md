@@ -11,7 +11,7 @@ After creating an account and signing in, users can
 
 ## Installation Instructions
 First, ensure that you have [NodeJS with NPM](https://nodejs.org/en/download) installed on your machine.  
-Now navigate to an empty source folder for the project and run ```npx create-expo-app nature-notebook```
+Now navigate to an empty source folder for the project and run ```npx create-expo-app nature-notebook``` in terminal. Then, run ```cd nature-notebook```.
 
 ## Group members
 **Nihar Kalode:** Built backend and database to store bird data, as well as sign in functionalities using Firebase  
