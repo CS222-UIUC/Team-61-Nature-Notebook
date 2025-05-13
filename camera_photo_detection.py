@@ -1,3 +1,8 @@
+"""
+
+
+
+"""
 from authlib.integrations.flask_client import OAuth
 import firebase_admin
 from db_funcs import add_species_found, get_bird_info, get_species_found_list
@@ -13,15 +18,11 @@ from auth import oauth_blueprint, init_oauth
 from functools import wraps
 from dotenv import load_dotenv
 from signup_semantics import signup_bp
-def get_labels(datapth):
-    class_labels = sorted(os.listdir(datapath))
-    class_indexed = {class_label :  index for index, class_label in enumerate(class_labels)}
-    return class_indexed
 
 load_dotenv()
 
 app = Flask(__name__)
-CORS(app, supports_credentials=True, origins=["http://localhost:8081", "http://localhost:5000", "localhost:8081", "localhost:5000", "http://localhost:8081/sign-up"])
+CORS(app, supports_credentials=True, origins=["http://localhost:8081", "http://localhost:1109", "localhost:8081", "localhost:5000", "http://localhost:8081/sign-up"])
 app.secret_key = os.getenv("SECRET_KEY", "airtag2")
 
 init_oauth(app)
@@ -31,9 +32,6 @@ app.register_blueprint(signup_bp)
 
 mpath = 'C:\\Users\\kshar\\nature_notebook\\nature_classifier_updated.keras'
 model = tf.keras.models.load_model(mpath)
-#datapath = "C:\\Users\\kshar\\OneDrive\\Desktop\\Birds"
-#class_ind = get_labels(datapath)
-#class_labels = list(class_ind.keys())
 
 
 # Connect to FireBase DB
@@ -115,4 +113,4 @@ def get_current_user():
     return jsonify({"email": user['email'], "username" : user['username']})
 
 if __name__ == "__main__":
-    app.run(host="0.0.0.0", port=5000, debug=True)
+    app.run(host="0.0.0.0", port=1109, debug=True)
