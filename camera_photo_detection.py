@@ -59,6 +59,29 @@ def preprocess(image):
     image = np.expand_dims(image, axis=0)
     return image
 
+@app.route("/notebook", methods=['GET'])
+@login_required
+def get_notebook():
+    username = session['user']['username']
+    found_ids = get_species_found_list(username) 
+    species_info = []
+    print(found_ids)
+
+    for species_id in found_ids:
+        try:
+            bird_key = class_labels[species_id]
+            info = get_bird_info(species_id)
+            if info:
+                species_info.append({
+                    "id": bird_key,
+                    "name": info.get("name", "Unknown"),
+                    "description": info.get("description", ""),
+                })
+        except IndexError:
+            continue
+    print(species_info)
+    return jsonify(species_info)
+
 @app.route("/predict", methods=["POST"])
 def predict():
     if "file" not in request.files:

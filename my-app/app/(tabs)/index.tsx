@@ -284,7 +284,7 @@ export default function Home() {
   onChange={handleFileUpload}
   style={{ display: 'none' }}
 />
-
+{username && (
         <TouchableOpacity
           style={[styles.buttonSecondary, styles.fixedWidth]}
           onPress={() => {
@@ -294,9 +294,9 @@ export default function Home() {
         >
           <Text style={styles.buttonText}>View Notebook</Text>
         </TouchableOpacity>
-
+)}
         {username && (
-      <TouchableOpacity onPress={handleLogout} style={styles.logoutButton}>
+      <TouchableOpacity onPress={handleLogout} style={[styles.button, styles.fixedWidth]}>
         <Text style={styles.buttonText}>Logout</Text>
       </TouchableOpacity>
         )}
@@ -332,7 +332,7 @@ const styles = StyleSheet.create({
   preview: {
     alignItems: 'center',
     marginTop: 0,
-    marginBottom: 120,
+    marginBottom: 180,
   },
   previewLabel: {
     fontSize: 18,

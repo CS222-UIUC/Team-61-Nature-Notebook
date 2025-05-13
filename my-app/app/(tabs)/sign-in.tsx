@@ -49,52 +49,52 @@ export default function SignIn() {
   return (
     <SafeAreaView style={styles.container}>
       <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : 'height'}>
-        <Text style={styles.title}>Welcome Back</Text>
-        <Text style={styles.subtitle}>Sign in to your Nature Notebook</Text>
+  <View style={styles.header}>
+    <Text style={styles.title}>Welcome Back</Text>
+    <Text style={styles.subtitle}>Sign in to your Nature Notebook</Text>
+  </View>
 
-        <TextInput
-          style={styles.input}
-          placeholder="Username"
-          placeholderTextColor={COLORS.walnut}
-          value={username}
-          onChangeText={setUsername}
-        />
+  <View style={styles.formWrapper}>
+    <TextInput
+      style={styles.input}
+      placeholder="Username"
+      placeholderTextColor={COLORS.walnut}
+      value={username}
+      onChangeText={setUsername}
+    />
 
-<View style={styles.passwordContainer}>
-  <TextInput
-    style={styles.passwordInput}
-    placeholder="Password"
-    placeholderTextColor={COLORS.walnut}
-    secureTextEntry={!showPassword}
-    value={password}
-    onChangeText={setPassword}
-  />
-  <TouchableOpacity
-    style={styles.toggleButton}
-    onPress={() => setShowPassword(prev => !prev)}
-  >
-    <Text style={styles.toggleButtonText}>
-      {showPassword ? 'Hide' : 'Show'}
-    </Text>
-  </TouchableOpacity>
-</View>
-
-
-        {error ? <Text style={styles.error}>{error}</Text> : null}
-
-
-        <TouchableOpacity style={styles.button} onPress={handleSignIn}>
-          <Text style={styles.buttonText}>Sign In</Text>
-        </TouchableOpacity>
-
-        <TouchableOpacity style={styles.linkButton}>
-        <Link href="/sign-up" style={styles.linkButton}>
-        <Text style={styles.linkText}>Don't have an account? Sign Up</Text>
-        </Link>
-
+    <View style={styles.passwordContainer}>
+      <TextInput
+        style={styles.passwordInput}
+        placeholder="Password"
+        placeholderTextColor={COLORS.walnut}
+        secureTextEntry={!showPassword}
+        value={password}
+        onChangeText={setPassword}
+      />
+      <TouchableOpacity
+        style={styles.toggleButton}
+        onPress={() => setShowPassword(prev => !prev)}
+      >
+        <Text style={styles.toggleButtonText}>
+          {showPassword ? 'Hide' : 'Show'}
+        </Text>
       </TouchableOpacity>
+    </View>
 
-      </KeyboardAvoidingView>
+    {error ? <Text style={styles.error}>{error}</Text> : null}
+
+    <TouchableOpacity style={styles.button} onPress={handleSignIn}>
+      <Text style={styles.buttonText}>Sign In</Text>
+    </TouchableOpacity>
+
+    <TouchableOpacity style={styles.linkButton}>
+      <Link href="/sign-up" style={styles.linkButton}>
+        <Text style={styles.linkText}>Don't have an account? Sign Up</Text>
+      </Link>
+    </TouchableOpacity>
+  </View>
+</KeyboardAvoidingView>
     </SafeAreaView>
   );
 }
@@ -127,21 +127,6 @@ const styles = StyleSheet.create({
     marginBottom: 30,
     textAlign: 'center',
   },
-  input: {
-    backgroundColor: COLORS.sage,
-    padding: 15,
-    borderRadius: 10,
-    marginBottom: 20,
-    fontSize: 16,
-    color: COLORS.darkBrown,
-  },
-  button: {
-    backgroundColor: COLORS.ecru,
-    padding: 15,
-    borderRadius: 10,
-    alignItems: 'center',
-    marginBottom: 15,
-  },
   buttonText: {
     color: COLORS.darkBrown,
     fontSize: 18,
@@ -159,13 +144,6 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     marginBottom: 12,
   }, 
-  passwordContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    backgroundColor: COLORS.sage,
-    borderRadius: 10,
-    marginBottom: 20,
-  },
   passwordInput: {
     flex: 1,
     padding: 15,
@@ -182,4 +160,37 @@ const styles = StyleSheet.create({
     color: COLORS.darkBrown,
     fontWeight: '600',
   },   
+  header: {
+    alignItems: 'center',
+    marginBottom: 30,
+  },
+  formWrapper: {
+    paddingHorizontal: 20,
+    alignItems: 'center',
+  },
+  input: {
+    backgroundColor: COLORS.sage,
+    padding: 15,
+    borderRadius: 10,
+    marginBottom: 20,
+    fontSize: 16,
+    color: COLORS.darkBrown,
+    width: '100%',
+  },
+  passwordContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: COLORS.sage,
+    borderRadius: 10,
+    marginBottom: 20,
+    width: '100%',
+  },
+  button: {
+    backgroundColor: COLORS.ecru,
+    padding: 15,
+    borderRadius: 10,
+    alignItems: 'center',
+    marginBottom: 15,
+    width: '100%',
+  },  
 });
