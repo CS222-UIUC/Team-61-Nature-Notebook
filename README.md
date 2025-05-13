@@ -2,6 +2,7 @@
 ## Nature Notebook: an automatic journal
 
 ## Technical Architecture
+![Flowchart CS222](https://github.com/user-attachments/assets/7bab3bc9-e572-4bf8-8349-34c194e9a8d7)
 
 ## Installation Instructions
 
