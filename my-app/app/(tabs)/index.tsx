@@ -31,6 +31,8 @@ export default function Home() {
 
   const [notebookData, setNotebookData] = useState([]);
   const [expandedIndex, setExpandedIndex] = useState(-1);
+  const [lastSpecies, setLastSpecies] = useState('');
+
   const fetchNotebook = async () => {
     try {
       const res = await fetch(`${BACKEND_URL}/notebook`, {
@@ -88,26 +90,61 @@ export default function Home() {
 
   const webcamRef = useRef(null);
 
+  const fileInputRef = useRef(null);
+
+  const handleFileUpload = async (event) => {
+    const file = event.target.files?.[0];
+    if (!file) return;
+  
+    const reader = new FileReader();
+    reader.onloadend = async () => {
+      const base64data = reader.result;
+      setPhotoUri(base64data);
+  
+      const formData = new FormData();
+      formData.append('file', file);
+  
+      try {
+        const res = await fetch(`${BACKEND_URL}/predict`, {
+          method: 'POST',
+          body: formData,
+          credentials: 'include',
+        });
+  
+        const result = await res.json();
+        setLastSpecies(result.name.split('.').slice(1).join('.'));
+        console.log('Predicted class from file:', result);
+      } catch (err) {
+        console.error('Upload prediction error:', err);
+      }
+    };
+  
+    reader.readAsDataURL(file); // ✅ gives base64 URI
+  };
+  
+  
+
   const capture = useCallback(async () => {
     const imageSrc = webcamRef.current.getScreenshot();
     if (!imageSrc) return;
   
     setPhotoUri(imageSrc);
+    try {
+      
     const res = await fetch(imageSrc);
     const blob = await res.blob();
-  
-    // Create FormData to send to Flask
+
     const formData = new FormData();
     formData.append('file', blob, `snap_${Date.now()}.jpg`);
   
-    try {
-      const response = await fetch('http://localhost:5000/predict', {
+    const response = await fetch(`${BACKEND_URL}/predict`, {
         method: 'POST',
         body: formData,
         credentials: 'include',
       });
   
       const result = await response.json();
+      setLastSpecies(result.name.split('.').slice(1).join('.'));
       console.log('Predicted class:', result);
     } catch (err) {
       console.error('Prediction error:', err);
@@ -144,7 +181,6 @@ export default function Home() {
           </View>
         </View>
       </Modal>
-    
     
     <View style={styles.header}>
       <Text style={styles.title}>Nature Notebook</Text>
@@ -218,7 +254,9 @@ export default function Home() {
       {/* Preview */}
       {photoUri && (
         <View style={styles.preview}>
-          <Text style={styles.previewLabel}>Last Photo</Text>
+          <Text style={styles.previewLabel}>
+          Last Photo: {lastSpecies.replace(/[_-]/g, ' ')}</Text>
+
           <Image source={{ uri: photoUri }} style={styles.previewImage} />
         </View>
       )}
@@ -231,6 +269,21 @@ export default function Home() {
         >
           <Text style={styles.buttonText}>Scan Animal</Text>
         </TouchableOpacity>
+
+        <TouchableOpacity
+  style={[styles.buttonSecondary, styles.fixedWidth]}
+  onPress={() => fileInputRef.current?.click()}
+>
+  <Text style={styles.buttonText}>Upload Image</Text>
+</TouchableOpacity>
+
+<input
+  type="file"
+  accept="image/*"
+  ref={fileInputRef}
+  onChange={handleFileUpload}
+  style={{ display: 'none' }}
+/>
 
         <TouchableOpacity
           style={[styles.buttonSecondary, styles.fixedWidth]}
@@ -278,7 +331,8 @@ const styles = StyleSheet.create({
 
   preview: {
     alignItems: 'center',
-    marginVertical: 30,
+    marginTop: 0,
+    marginBottom: 120,
   },
   previewLabel: {
     fontSize: 18,

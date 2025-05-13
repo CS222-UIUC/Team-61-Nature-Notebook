@@ -70,34 +70,20 @@ def predict():
     processed_image = preprocess(image)
     predictions = model.predict(processed_image)
     predicted_class = class_labels[np.argmax(predictions)]
-    print('user' in session)
+    species_id = predicted_class.split('.')[0]
+    species_info = get_bird_info(species_id)
+
     if 'user' in session:
         username = session['user']['username']
         add_species_found(username, predicted_class)
-    return get_bird_info(predicted_class)
 
-@app.route("/notebook", methods=['GET'])
-@login_required
-def get_notebook():
-    username = session['user']['username']
-    found_ids = get_species_found_list(username) 
-    species_info = []
-    print(found_ids)
+    print("Predicted:", predicted_class)
+    print("Bird info:", species_info)
 
-    for species_id in found_ids:
-        try:
-            bird_key = class_labels[species_id]
-            info = get_bird_info(species_id)
-            if info:
-                species_info.append({
-                    "id": bird_key,
-                    "name": info.get("name", "Unknown"),
-                    "description": info.get("description", ""),
-                })
-        except IndexError:
-            continue
-    print(species_info)
-    return jsonify(species_info)
+    return jsonify({
+        "name": predicted_class,
+        "description": species_info.get("description", "")
+    })
 
 
 @app.route('/me', methods=['GET'])
