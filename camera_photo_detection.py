@@ -59,23 +59,6 @@ def preprocess(image):
     image = np.expand_dims(image, axis=0)
     return image
 
-@app.route("/predict", methods=["POST"])
-def predict():
-    if "file" not in request.files:
-        return jsonify({"error": "No file provided"}), 400
-
-    file = request.files["file"]
-    image = Image.open(io.BytesIO(file.read()))
-
-    processed_image = preprocess(image)
-    predictions = model.predict(processed_image)
-    predicted_class = class_labels[np.argmax(predictions)]
-    print('user' in session)
-    if 'user' in session:
-        username = session['user']['username']
-        add_species_found(username, predicted_class)
-    return get_bird_info(predicted_class)
-
 @app.route("/notebook", methods=['GET'])
 @login_required
 def get_notebook():
@@ -98,6 +81,32 @@ def get_notebook():
             continue
     print(species_info)
     return jsonify(species_info)
+
+@app.route("/predict", methods=["POST"])
+def predict():
+    if "file" not in request.files:
+        return jsonify({"error": "No file provided"}), 400
+
+    file = request.files["file"]
+    image = Image.open(io.BytesIO(file.read()))
+
+    processed_image = preprocess(image)
+    predictions = model.predict(processed_image)
+    predicted_class = class_labels[np.argmax(predictions)]
+    species_id = predicted_class.split('.')[0]
+    species_info = get_bird_info(species_id)
+
+    if 'user' in session:
+        username = session['user']['username']
+        add_species_found(username, predicted_class)
+
+    print("Predicted:", predicted_class)
+    print("Bird info:", species_info)
+
+    return jsonify({
+        "name": predicted_class,
+        "description": species_info.get("description", "")
+    })
 
 
 @app.route('/me', methods=['GET'])

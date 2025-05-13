@@ -48,52 +48,56 @@ export default function SignUpScreen() {
     }
     return(
 <SafeAreaView style={styles.container}>
-      <Text style={styles.title}>Create Account</Text>
+  <View style={styles.header}>
+    <Text style={styles.title}>Create Account</Text>
+  </View>
 
+  <View style={styles.formWrapper}>
+    <TextInput
+      style={styles.input}
+      placeholder="Email"
+      placeholderTextColor="#888"
+      value={email}
+      onChangeText={setEmail}
+      autoCapitalize="none"
+      keyboardType="email-address"
+    />
+
+    <TextInput
+      style={styles.input}
+      placeholder="Username"
+      placeholderTextColor="#888"
+      value={username}
+      onChangeText={setUsername}
+      autoCapitalize="none"
+    />
+
+    <View style={styles.passwordContainer}>
       <TextInput
-        style={styles.input}
-        placeholder="Email"
+        style={styles.passwordInput}
+        placeholder="Password"
         placeholderTextColor="#888"
-        value={email}
-        onChangeText={setEmail}
-        autoCapitalize="none"
-        keyboardType="email-address"
+        value={password}
+        onChangeText={setPassword}
+        secureTextEntry={!showPassword}
       />
-
-      <TextInput
-        style={styles.input}
-        placeholder="Username"
-        placeholderTextColor="#888"
-        value={username}
-        onChangeText={setUsername}
-        autoCapitalize="none"
-      />
-
-      <View style={styles.passwordContainer}>
-        <TextInput
-          style={styles.passwordInput}
-          placeholder="Password"
-          placeholderTextColor="#888"
-          value={password}
-          onChangeText={setPassword}
-          secureTextEntry={!showPassword}
-        />
-        <TouchableOpacity
-          style={styles.toggleButton}
-          onPress={() => setShowPassword(!showPassword)}
-        >
-          <Text style={styles.toggleButtonText}>
-            {showPassword ? 'Hide' : 'Show'}
-          </Text>
-        </TouchableOpacity>
-      </View>
-
-      {error ? <Text style={styles.error}>{error}</Text> : null}
-
-      <TouchableOpacity style={styles.button} onPress={handleSignUp}>
-        <Text style={styles.buttonText}>Create Account</Text>
+      <TouchableOpacity
+        style={styles.toggleButton}
+        onPress={() => setShowPassword(!showPassword)}
+      >
+        <Text style={styles.toggleButtonText}>
+          {showPassword ? 'Hide' : 'Show'}
+        </Text>
       </TouchableOpacity>
-    </SafeAreaView>
+    </View>
+
+    {error ? <Text style={styles.error}>{error}</Text> : null}
+
+    <TouchableOpacity style={styles.button} onPress={handleSignUp}>
+      <Text style={styles.buttonText}>Create Account</Text>
+    </TouchableOpacity>
+  </View>
+</SafeAreaView>
   );
 }
 
@@ -119,21 +123,6 @@ const styles = StyleSheet.create({
         marginBottom: 10,
         textAlign: 'center',
     },
-    input: {
-        backgroundColor: COLORS.sage,
-        padding: 15,
-        borderRadius: 10,
-        marginBottom: 20,
-        fontSize: 16,
-        color: COLORS.darkBrown,
-    },
-      passwordContainer: {
-        flexDirection: 'row',
-        alignItems: 'center',
-        backgroundColor: COLORS.sage,
-        borderRadius: 10,
-        marginBottom: 16,
-      },
       passwordInput: {
         flex: 1,
         padding: 15,
@@ -150,13 +139,6 @@ const styles = StyleSheet.create({
         fontSize: 16,
         color: COLORS.walnut,
       },  
-    button: {
-    backgroundColor: COLORS.ecru,
-    padding: 15,
-    borderRadius: 10,
-    alignItems: 'center',
-    marginBottom: 15,
-    },  
     buttonText: {
         color: COLORS.darkBrown,
         fontSize: 18,
@@ -167,4 +149,37 @@ const styles = StyleSheet.create({
         textAlign: 'center',
         marginBottom: 12,
       },
+      header: {
+        alignItems: 'center',
+        marginBottom: 30,
+      },
+      formWrapper: {
+        paddingHorizontal: 20,
+        alignItems: 'center',
+      },
+      input: {
+        backgroundColor: COLORS.sage,
+        padding: 15,
+        borderRadius: 10,
+        marginBottom: 20,
+        fontSize: 16,
+        color: COLORS.darkBrown,
+        width: '100%',
+      },
+      passwordContainer: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        backgroundColor: COLORS.sage,
+        borderRadius: 10,
+        marginBottom: 16,
+        width: '100%',
+      },
+      button: {
+        backgroundColor: COLORS.ecru,
+        padding: 15,
+        borderRadius: 10,
+        alignItems: 'center',
+        marginBottom: 15,
+        width: '100%',
+      },      
     });
