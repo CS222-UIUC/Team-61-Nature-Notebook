@@ -13,6 +13,7 @@ Previously, many bird lovers were unable to keep track of the species they had s
 
 ## Installation Instructions
 First, ensure that you have [NodeJS with NPM](https://nodejs.org/en/download) installed on your machine.  
+Further, ensure that you have Python 3.10.0 installed. The download for this can be found at [This link](https://www.python.org/downloads/) by scrolling down to the "Looking for a specific release?" section.
 Note that this installation guide works for Windows only. Ensure that both localhost:8081 and localhost:1109 have no running processes before continuing.
 Now navigate to an empty source folder for the project and run in terminal, in this order, 
 
