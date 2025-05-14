@@ -21,7 +21,7 @@ Now navigate to an empty source folder for the project and run in terminal, in t
 - ```py -3.10 -m venv nature-notebook-env```
 - ```./nature-notebook-env/Scripts/Activate.ps1```
 - ```pip install -r requirements.txt```
-Now, go to [this link](https://drive.google.com/file/d/139eSaMLDMwS3RVzOINbfq_7M4RjMD_cs/view?usp=sharing) and download the nature_classifier_updated.keras model. Then, run:
+Now, go to [this link](https://drive.google.com/file/d/139eSaMLDMwS3RVzOINbfq_7M4RjMD_cs/view?usp=sharing) and download the nature_classifier_updated.keras model, and verify that the downloaded file has this name (otherwise, rename it). Then, run:
 - ```explorer .```
 And drag and drop the nature_classifier_updated.keras file into the "/model" folder shown in the file explorer. Then, run:
 - ```cd my-app```
