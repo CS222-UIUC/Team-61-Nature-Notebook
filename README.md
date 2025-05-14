@@ -38,7 +38,9 @@ You will now see that, at localhost:8081, the project is loaded and you can inte
 First, install NodeJS with NPM and Python 3.10.0 on your machine, if not already present. If you don't have [Brew](https://brew.sh/), download it.
 - ```brew install node```
 - ```brew install python@3.10```
+
 Ensure that both localhost:8081 and localhost:1109 have no running processes before continuing.
+
 Now navigate to an **empty** folder for the project where you want to save it in the terminal and run, in this order, 
 - ```git clone https://github.com/CS222-UIUC/Team-61-Nature-Notebook.git .```
 - ```python3 -m venv nature-notebook-env```
