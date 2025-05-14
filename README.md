@@ -39,7 +39,9 @@ First, install NodeJS with NPM and Python 3.10 (crucial it is 3.10) on your mach
 - ```brew install node```
 - ```brew install python@3.10``` (If other version of Python is installed, run ```brew reinstall python@3.10```)
 
-Ensure that both localhost:8081 and localhost:1109 have no running processes before continuing.
+Ensure that both localhost:8081 and localhost:1109 have no running processes before continuing. If they do, kill the process as such:
+-```lsof -i :<port>```. Note the PID from the output (If no output, no process is running and we're safe)
+-```kill -9 <PID>```
 
 Now navigate to an **empty** folder for the project where you want to save it in the terminal and run, in this order, 
 
