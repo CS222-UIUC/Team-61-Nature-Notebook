@@ -35,7 +35,7 @@ Finally, open a new terminal and navigate to the source folder again. Now, run
 You will now see that, at localhost:8081, the project is loaded and you can interact with the project as necessary. Enjoy!
 
 # MacOS
-First, install NodeJS with NPM and Python 3.10.0 on your machine, if not already present. If you don't have [Brew](https://brew.sh/), download it.
+First, install NodeJS with NPM and Python 3.10 (crucial it is 3.10) on your machine, if not already present. If you don't have [Brew](https://brew.sh/), download it.
 - ```brew install node```
 - ```brew install python@3.10```
 
@@ -44,7 +44,7 @@ Ensure that both localhost:8081 and localhost:1109 have no running processes bef
 Now navigate to an **empty** folder for the project where you want to save it in the terminal and run, in this order, 
 
 - ```git clone https://github.com/CS222-UIUC/Team-61-Nature-Notebook.git .```
-- ```python3 -m venv nature-notebook-env```
+- ```/opt/homebrew/bin/python3.10 -m venv nature-notebook-env``` (Change path if Python 3.10 is installed elsewhere)
 - ```source nature-notebook-env/bin/activate```
 - ```pip install -r requirements.txt```
 Now, go to [this link](https://drive.google.com/file/d/139eSaMLDMwS3RVzOINbfq_7M4RjMD_cs/view?usp=sharing) and download the nature_classifier_updated.keras model, and verify that the downloaded file has this name (otherwise, rename it). Then, run:
