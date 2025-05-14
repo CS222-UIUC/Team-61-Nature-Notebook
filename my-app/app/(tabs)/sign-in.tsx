@@ -1,3 +1,11 @@
+/**
+ * SignIn screen 
+ * - Allows users to log in with username and password
+ * - Displays login errors and toggles password visibility
+ * - Redirects to main screen on successful login
+ */
+
+
 import React, { useState } from 'react';
 import {
   View,

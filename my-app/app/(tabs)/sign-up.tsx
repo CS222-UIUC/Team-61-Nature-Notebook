@@ -1,3 +1,11 @@
+/**
+ * Sign-up screen for the Nature Notebook app.
+ * - Collects email, username, and password
+ * - Validates input and submits to backend
+ * - Redirects to home on successful registration
+ */
+
+
 import React, {useState} from 'react';
 import {Platform, View, Text, TextInput, TouchableOpacity, StyleSheet, SafeAreaView} from 'react-native';
 import {useRouter} from 'expo-router';

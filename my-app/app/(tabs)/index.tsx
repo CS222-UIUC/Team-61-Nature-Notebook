@@ -1,3 +1,12 @@
+/**
+ * Main Home screen 
+ * - Allows image capture via webcam or file upload
+ * - Sends image to backend for species prediction
+ * - Displays last identified species and user notebook
+ * - Handles user session, logout, and notebook fetching
+ */
+
+
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import {
   View,

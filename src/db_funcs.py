@@ -1,3 +1,17 @@
+"""
+User & Bird Database Management
+
+Functions for managing user accounts and bird species data in a Firebase Realtime Database. 
+It includes:
+- Firebase initialization and credential handling.
+- User creation, deletion, and authentication (with secure password hashing).
+- User profile management: email, password, username, and active status updates.
+- Bitstring-based tracking of bird species identified by each user.
+- Permission and settings handling through a local `User` class.
+- Bird species database management, including adding and retrieving bird info.
+"""
+
+
 # Imports
 import pandas as pd
 import firebase_admin
