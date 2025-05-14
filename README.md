@@ -12,6 +12,7 @@ Previously, many bird lovers were unable to keep track of the species they had s
 ![Flowchart CS222](https://github.com/user-attachments/assets/7bab3bc9-e572-4bf8-8349-34c194e9a8d7)
 
 ## Installation Instructions
+# Windows
 First, ensure that you have [NodeJS with NPM](https://nodejs.org/en/download) installed on your machine.  
 Further, ensure that you have Python 3.10.0 installed. The download for this can be found at [this link](https://www.python.org/downloads/) by scrolling down to the "Looking for a specific release?" section.  
 Note that this installation guide works for Windows only. Ensure that both localhost:8081 and localhost:1109 have no running processes before continuing.
@@ -33,6 +34,27 @@ Finally, open a new terminal and navigate to the source folder again. Now, run
 
 You will now see that, at localhost:8081, the project is loaded and you can interact with the project as necessary. Enjoy!
 
+# MacOS
+First, install NodeJS with NPM and Python 3.10.0 on your machine, if not already present. If you don't have [Brew](https://brew.sh/), download it.
+- ```brew install node```
+- ```brew install python@3.10```
+Ensure that both localhost:8081 and localhost:1109 have no running processes before continuing.
+Now navigate to an **empty** folder for the project where you want to save it in the terminal and run, in this order, 
+- ```git clone https://github.com/CS222-UIUC/Team-61-Nature-Notebook.git .```
+- ```python3 -m venv nature-notebook-env```
+- ```source nature-notebook-env/bin/activate```
+- ```pip install -r requirements.txt```
+Now, go to [this link](https://drive.google.com/file/d/139eSaMLDMwS3RVzOINbfq_7M4RjMD_cs/view?usp=sharing) and download the nature_classifier_updated.keras model, and verify that the downloaded file has this name (otherwise, rename it). Then, run:
+- ```explorer .```
+And drag and drop the nature_classifier_updated.keras file into the "/model" folder shown in the file explorer. Then, run:
+- ```cd my-app```
+- ```npm install```
+- ```npm run web```
+Finally, open a new terminal and navigate to the source folder again. Now, run
+- ```source nature-notebook-env/bin/activate```
+- ```python3 src/camera_photo_detection.py```
+
+You will now see that, at localhost:8081, the project is loaded and you can interact with the project as necessary. Enjoy!
 ## Group members
 **Nihar Kalode:** Built backend and database to store bird data, as well as sign in functionalities using Firebase  
 **Kartikey Sharma:** Created machine learning classifiers using Tensorflow and led integration between backend and frontend  
