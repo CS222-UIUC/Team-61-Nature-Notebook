@@ -28,6 +28,7 @@ And drag and drop the nature_classifier_updated.keras file into the "/model" fol
 - ```npm install```
 - ```npm run web```
 Finally, open a new terminal and navigate to the source folder again. Now, run
+- ```./nature-notebook-env/Scripts/Activate.ps1```
 - ```python src/camera_photo_detection.py```
 
 You will now see that, at localhost:8081, the project is loaded and you can interact with the project as necessary. Enjoy!
