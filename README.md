@@ -12,7 +12,7 @@ Previously, many bird lovers were unable to keep track of the species they had s
 ![Flowchart CS222](https://github.com/user-attachments/assets/7bab3bc9-e572-4bf8-8349-34c194e9a8d7)
 
 ## Installation Instructions
-# Windows
+### Windows
 First, ensure that you have [NodeJS with NPM](https://nodejs.org/en/download) installed on your machine.  
 Further, ensure that you have Python 3.10.0 installed. The download for this can be found at [this link](https://www.python.org/downloads/) by scrolling down to the "Looking for a specific release?" section.  
 Ensure that both localhost:8081 and localhost:1109 have no running processes before continuing.
@@ -34,7 +34,7 @@ Finally, open a new terminal and navigate to the source folder again. Now, run
 
 You will now see that, at localhost:8081, the project is loaded and you can interact with the project as necessary. Enjoy!
 
-# MacOS
+### MacOS
 First, install NodeJS with NPM and Python 3.10 (crucial it is 3.10) on your machine, if not already present. If you don't have [Brew](https://brew.sh/), download it.
 - ```brew install node```
 - ```brew install python@3.10```
