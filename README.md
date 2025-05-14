@@ -15,7 +15,7 @@ Previously, many bird lovers were unable to keep track of the species they had s
 # Windows
 First, ensure that you have [NodeJS with NPM](https://nodejs.org/en/download) installed on your machine.  
 Further, ensure that you have Python 3.10.0 installed. The download for this can be found at [this link](https://www.python.org/downloads/) by scrolling down to the "Looking for a specific release?" section.  
-Note that this installation guide works for Windows only. Ensure that both localhost:8081 and localhost:1109 have no running processes before continuing.
+Ensure that both localhost:8081 and localhost:1109 have no running processes before continuing.
 Now navigate to an empty source folder for the project and run in terminal, in this order, 
 
 - ```git clone https://github.com/CS222-UIUC/Team-61-Nature-Notebook.git .```
@@ -42,6 +42,7 @@ First, install NodeJS with NPM and Python 3.10.0 on your machine, if not already
 Ensure that both localhost:8081 and localhost:1109 have no running processes before continuing.
 
 Now navigate to an **empty** folder for the project where you want to save it in the terminal and run, in this order, 
+
 - ```git clone https://github.com/CS222-UIUC/Team-61-Nature-Notebook.git .```
 - ```python3 -m venv nature-notebook-env```
 - ```source nature-notebook-env/bin/activate```
