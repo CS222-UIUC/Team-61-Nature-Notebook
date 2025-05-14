@@ -94,7 +94,7 @@ matplotlib==3.10.1
 matplotlib-inline==0.1.7
 mdurl==0.1.2
 mistune==3.1.2
-ml_dtypes==0.4.1
+ml_dtypes
 msgpack==1.1.0
 namex==0.0.8
 nbclient==0.10.2
@@ -134,8 +134,8 @@ python-dotenv==1.1.0
 python-json-logger==3.2.1
 python-version==0.0.2
 pytz==2025.1
-pywin32==308
-pywinpty==2.0.15
+pywin32==308; sys_platform == "win32"
+pywinpty==2.0.15; sys_platform == "win32"
 PyYAML==6.0.2
 pyzmq==26.2.1
 referencing==0.36.2
@@ -156,7 +156,14 @@ stack-data==0.6.3
 tensorboard==2.18.0
 tensorboard-data-server==0.7.2
 tensorflow-io-gcs-filesystem==0.31.0
-tensorflow_intel==2.18.0
+tensorflow
+# For Windows
+tensorflow-intel; sys_platform == "win32"
+# For macOS (Apple Silicon)
+tensorflow-macos; sys_platform == "darwin" and platform_machine == "arm64"
+tensorflow-metal; sys_platform == "darwin" and platform_machine == "arm64"
+# For macOS (Intel)
+tensorflow; sys_platform == "darwin" and platform_machine != "arm64"
 termcolor==2.5.0
 terminado==0.18.1
 threadpoolctl==3.5.0
