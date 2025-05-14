@@ -5,6 +5,7 @@ After creating an account and signing in, users can:
 - take a photo of any bird they see to have its species detected,
 - save discovered birds to their notebook, and
 - view descriptions and information on birds they catalog
+
 Previously, many bird lovers were unable to keep track of the species they had seen or could not identify birds in their communities. This motivated the development of this project, and these issues are tackled by Nature Notebook.
 
 ## Technical Architecture
