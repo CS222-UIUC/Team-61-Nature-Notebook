@@ -3,3 +3,4 @@ data/
 nature_classifier_updated.keras/
 nature_classifier.keras/
 node_modules
+models/

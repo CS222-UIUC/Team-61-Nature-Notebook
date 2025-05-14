@@ -25,7 +25,9 @@ init_oauth(app)
 app.register_blueprint(oauth_blueprint)
 app.register_blueprint(signup_bp)
 
-mpath = 'C:\\Users\\kshar\\nature_notebook\\nature_classifier_updated.keras'
+mpath = mpath = os.path.join(os.path.dirname(__file__), 'models', 'nature_classifier_updated.keras')
+model = tf.keras.models.load_model(mpath)
+
 model = tf.keras.models.load_model(mpath)
 
 
