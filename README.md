@@ -37,7 +37,7 @@ You will now see that, at localhost:8081, the project is loaded and you can inte
 ### MacOS
 First, install NodeJS with NPM and Python 3.10 (crucial it is 3.10) on your machine, if not already present. If you don't have [Brew](https://brew.sh/), download it.
 - ```brew install node```
-- ```brew install python@3.10```
+- ```brew install python@3.10``` (If other version of Python is installed, run ```brew reinstall python@3.10```)
 
 Ensure that both localhost:8081 and localhost:1109 have no running processes before continuing.
 
