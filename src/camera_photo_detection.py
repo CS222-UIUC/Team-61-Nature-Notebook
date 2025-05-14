@@ -39,7 +39,7 @@ app.register_blueprint(oauth_blueprint)
 app.register_blueprint(signup_bp)
 
 # Load pre-trained TensorFlow model for image classification
-mpath = 'model/nature_classifier_updated.keras'
+mpath = os.path.join(os.path.dirname(__file__), '..', 'model', 'nature_classifier_updated.keras')
 model = tf.keras.models.load_model(mpath)
 
 
